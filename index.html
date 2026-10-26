@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สำรวจพีระมิด | คณิตศาสตร์ ม.3</title>
+<style>
+:root{--navy:#17324d;--blue:#2878b5;--teal:#16a6a1;--gold:#ffbf47;--paper:#f4f8fc;--ink:#203047;--muted:#62748a}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,"Noto Sans Thai",sans-serif;background:var(--paper);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(120deg,#17324d,#2878b5);color:white;padding:28px 20px 24px}
+header .wrap,main{max-width:1100px;margin:auto}header h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.3rem)}header p{margin:0;color:#e5f4ff}
+main{padding:20px;display:grid;gap:18px}.panel{background:white;border-radius:18px;padding:20px;box-shadow:0 5px 20px #193b5810;border:1px solid #e4edf5}
+h2{font-size:1.25rem;margin:0 0 12px;color:var(--navy)}h3{font-size:1rem;margin:0 0 8px;color:var(--navy)}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.controls{display:grid;gap:18px}
+.control label{display:flex;justify-content:space-between;gap:10px;font-weight:bold}.control output{color:#087f8c}
+input[type=range]{width:100%;accent-color:var(--teal);margin:10px 0}
+.small{font-size:.9rem;color:var(--muted)}.formula{background:#eef7fb;border-left:4px solid var(--teal);padding:12px 14px;border-radius:8px;margin:8px 0}
+.scene{background:linear-gradient(#eaf7ff,#f8fbff);border-radius:14px;padding:8px;min-height:290px;display:grid;place-items:center}
+svg{width:100%;max-width:470px;height:auto}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.metric{padding:12px;background:#f2f7fb;border-radius:12px}.metric span{display:block;color:var(--muted);font-size:.86rem}.metric strong{font-size:1.25rem;color:var(--navy)}
+button{border:0;border-radius:10px;padding:10px 15px;font:inherit;font-weight:bold;cursor:pointer;background:var(--blue);color:white}button.secondary{background:#e7eef5;color:var(--navy)}button:focus,input:focus{outline:3px solid #ffcf66;outline-offset:2px}
+.quiz-q{padding:14px;border:1px solid #e1eaf2;border-radius:12px;margin:12px 0}.quiz-q p{font-weight:bold;margin:0 0 8px}.quiz-q label{display:block;margin:7px 0;cursor:pointer}.feedback{margin-top:8px;font-weight:bold}.correct{color:#087d55}.incorrect{color:#b44b35}
+footer{text-align:center;padding:0 20px 25px;color:var(--muted);font-size:.85rem}
+@media(max-width:760px){.layout{grid-template-columns:1fr}main{padding:12px}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🔺 สำรวจพีระมิด</h1><p>สื่อโต้ตอบคณิตศาสตร์ ชั้นมัธยมศึกษาปีที่ 3 · ปรับขนาดแล้วสังเกตการเปลี่ยนแปลง</p></div></header>
+<main>
+<section class="panel">
+<h2>เป้าหมายการเรียนรู้</h2>
+นักเรียนสามารถคำนวณหาพื้นที่ผิวและปริมาตรของพีระมิดได้ โดยเชื่อมโยงสูตรกับภาพสามมิติ
+<div class="formula"><b>ปริมาตร</b> = ⅓ × พื้นที่ฐาน × สูงตั้งฉาก<br><b>พื้นที่ผิวทั้งหมด</b> = พื้นที่ฐาน + พื้นที่ผิวข้าง</div>
+<p class="small">แบบจำลองนี้เป็นพีระมิดฐานสี่เหลี่ยมจัตุรัส โดยกำหนดความยาวด้านฐานเป็น a และความสูงตั้งฉากเป็น h (หน่วยเดียวกัน)</p>
+</section>
+<div class="layout">
+<section class="panel controls">
+<h2>ปรับตัวแปรแบบเรียลไทม์</h2>
+<div class="control"><label for="base">ตัวแปร 1: ด้านฐาน a <output id="baseOut">6 หน่วย</output></label><input id="base" type="range" min="2" max="12" step="1" value="6"><div class="small">เลื่อนเพื่อเปลี่ยนความยาวด้านของฐานสี่เหลี่ยม</div></div>
+<div class="control"><label for="height">ตัวแปร 2: ความสูงตั้งฉาก h <output id="heightOut">8 หน่วย</output></label><input id="height" type="range" min="2" max="12" step="1" value="8"><div class="small">เลื่อนเพื่อเปลี่ยนความสูงจากยอดตั้งฉากลงสู่จุดกึ่งกลางฐาน</div></div>
+<div class="formula" id="calculation"></div>
+<button class="secondary" id="reset" type="button">คืนค่าเริ่มต้น</button>
+</section>
+<section class="panel">
+<h2>ภาพพีระมิดที่เปลี่ยนตามตัวแปร</h2>
+<div class="scene">
+<svg id="pyramid" viewBox="0 0 420 300" role="img" aria-label="ภาพพีระมิดฐานสี่เหลี่ยมจัตุรัส">
+<defs><linearGradient id="faceA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7bd6d0"/><stop offset="1" stop-color="#269eaa"/></linearGradient><linearGradient id="faceB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6aa8e5"/><stop offset="1" stop-color="#2878b5"/></linearGradient></defs>
+<polygon id="leftFace" points="210,40 95,190 210,235" fill="url(#faceA)" stroke="#17324d" stroke-width="2"/>
+<polygon id="rightFace" points="210,40 210,235 325,190" fill="url(#faceB)" stroke="#17324d" stroke-width="2"/>
+<polygon id="backFace" points="210,40 325,190 210,235 95,190" fill="none" stroke="#17324d" stroke-width="2" stroke-dasharray="5 4"/>
+<polygon id="baseShape" points="95,190 210,235 325,190 210,145" fill="#ffcf66" fill-opacity=".55" stroke="#17324d" stroke-width="2"/>
+<line id="altitude" x1="210" y1="40" x2="210" y2="190" stroke="#b44b35" stroke-width="2.5" stroke-dasharray="6 4"/>
+<circle id="apex" cx="210" cy="40" r="4" fill="#17324d"/>
+<text id="hLabel" x="220" y="112" font-size="14" fill="#b44b35" font-weight="bold">h = 8</text>
+<text id="aLabel" x="265" y="222" font-size="14" fill="#17324d" font-weight="bold">a = 6</text>
+<text x="15" y="280" font-size="12" fill="#62748a">ภาพจำลองเพื่อการเรียนรู้ (ไม่ใช่มาตราส่วนจริง)</text>
+</svg>
+</div>
+<div class="metrics">
+<div class="metric"><span>พื้นที่ฐาน (a²)</span><strong id="baseArea">36 ตร.หน่วย</strong></div>
+<div class="metric"><span>สูงเอียง (ℓ)</span><strong id="slant">8.54 หน่วย</strong></div>
+<div class="metric"><span>พื้นที่ผิวทั้งหมด</span><strong id="surface">144.5 ตร.หน่วย</strong></div>
+<div class="metric"><span>ปริมาตร</span><strong id="volume">96 ลบ.หน่วย</strong></div>
+</div>
+</section>
+</div>
+<section class="panel">
+<h2>ลองคิดท้ายกิจกรรม: 3 ข้อ</h2>
+<p class="small">เลือกคำตอบให้ครบ แล้วกด “ตรวจคำตอบ” เพื่อดูผลและเฉลย</p>
+<form id="quiz">
+<div class="quiz-q"><p>1. พีระมิดมีพื้นที่ฐาน 49 ตารางหน่วย และสูงตั้งฉาก 9 หน่วย ปริมาตรเท่าใด?</p>
+<label><input type="radio" name="q1" value="a"> 147 ลูกบาศก์หน่วย</label><label><input type="radio" name="q1" value="b"> 441 ลูกบาศก์หน่วย</label><label><input type="radio" name="q1" value="c"> 58 ลูกบาศก์หน่วย</label><div class="feedback" id="f1"></div></div>
+<div class="quiz-q"><p>2. พีระมิดฐานสี่เหลี่ยมจัตุรัสยาวด้านละ 5 หน่วย มีพื้นที่ฐานเท่าใด?</p>
+<label><input type="radio" name="q2" value="a"> 20 ตารางหน่วย</label><label><input type="radio" name="q2" value="b"> 25 ตารางหน่วย</label><label><input type="radio" name="q2" value="c"> 10 ตารางหน่วย</label><div class="feedback" id="f2"></div></div>
+<div class="quiz-q"><p>3. ข้อใดคือวิธีหาพื้นที่ผิวทั้งหมดของพีระมิด?</p>
+<label><input type="radio" name="q3" value="a"> พื้นที่ฐาน × สูง</label><label><input type="radio" name="q3" value="b"> ⅓ × พื้นที่ฐาน × สูง</label><label><input type="radio" name="q3" value="c"> พื้นที่ฐาน + พื้นที่ผิวข้าง</label><div class="feedback" id="f3"></div></div>
+<button type="submit">ตรวจคำตอบ</button> <button class="secondary" type="button" id="showAnswers">แสดงเฉลยทั้งหมด</button>
+<div id="score" aria-live="polite" style="margin-top:12px;font-weight:bold"></div>
+</form>
+</section>
+<section class="panel">
+<h2>สรุปสูตรที่ควรจำ</h2>
+<div class="formula">ฐานสี่เหลี่ยมจัตุรัส: พื้นที่ฐาน = a²</div>
+<div class="formula">สูงเอียงของหน้าสามเหลี่ยม: ℓ = √(h² + (a ÷ 2)²)</div>
+<div class="formula">พื้นที่ผิวทั้งหมด = a² + 2aℓ</div>
+<div class="formula">ปริมาตร = ⅓a²h</div>
+<p class="small">หมายเหตุ: สูตรพื้นที่ผิวข้าง 2aℓ ใช้กับพีระมิดฐานสี่เหลี่ยมจัตุรัสที่มีหน้าข้างเป็นสามเหลี่ยมหน้าจั่วเท่ากันทั้ง 4 หน้า</p>
+</section>
+</main>
+<footer>สื่อการเรียนรู้แบบออฟไลน์ · บันทึกไฟล์นี้แล้วเปิดด้วยเว็บเบราว์เซอร์ได้ทันที</footer>
+<script>
+const $ = id => document.getElementById(id);
+const base = $('base'), height = $('height');
+function update(){
+ const a=Number(base.value), h=Number(height.value);
+ const l=Math.sqrt(h*h+(a/2)**2), ba=a*a, s=ba+2*a*l, v=ba*h/3;
+ $('baseOut').textContent=a+' หน่วย'; $('heightOut').textContent=h+' หน่วย';
+ $('baseArea').textContent=fmt(ba)+' ตร.หน่วย'; $('slant').textContent=fmt(l)+' หน่วย';
+ $('surface').textContent=fmt(s)+' ตร.หน่วย'; $('volume').textContent=fmt(v)+' ลบ.หน่วย';
+ $('calculation').innerHTML='<b>แทนค่าในสูตร</b><br>พื้นที่ผิว = '+a+'² + 2('+a+')√('+h+'² + ('+a+'/2)²) ≈ <b>'+fmt(s)+'</b> ตร.หน่วย<br>ปริมาตร = ⅓ × '+a+'² × '+h+' = <b>'+fmt(v)+'</b> ลบ.หน่วย';
+ // Map the two sliders to a clear, responsive schematic pyramid.
+ const scale= Math.min(1.15, 6/a), cx=210, cy=180, half=35+ a*4.1, depth=half*.39;
+ const apexY=35+(12-h)*3.0, apexX=cx;
+ const p1=[cx-half,cy], p2=[cx,cy+depth], p3=[cx+half,cy], p4=[cx,cy-depth];
+ const pts=p=>p.map(q=>q.join(',')).join(' ');
+ $('leftFace').setAttribute('points',pts([[apexX,apexY],p1,p2]));
+ $('rightFace').setAttribute('points',pts([[apexX,apexY],p2,p3]));
+ $('backFace').setAttribute('points',pts([[apexX,apexY],p3,p4,p1]));
+ $('baseShape').setAttribute('points',pts([p1,p2,p3,p4]));
+ $('altitude').setAttribute('x1',cx); $('altitude').setAttribute('y1',apexY);
+ $('altitude').setAttribute('x2',cx); $('altitude').setAttribute('y2',cy);
+ $('apex').setAttribute('cx',cx); $('apex').setAttribute('cy',apexY);
+ $('hLabel').setAttribute('x',cx+10); $('hLabel').setAttribute('y',(apexY+cy)/2); $('hLabel').textContent='h = '+h;
+ $('aLabel').setAttribute('x',cx+half*.42); $('aLabel').setAttribute('y',cy+depth+7); $('aLabel').textContent='a = '+a;
+}
+function fmt(n){return Number(n.toFixed(2)).toString()}
+base.addEventListener('input',update); height.addEventListener('input',update);
+$('reset').addEventListener('click',()=>{base.value=6;height.value=8;update()});
+const answers={q1:'a',q2:'b',q3:'c'};
+const explanations={
+ q1:'ถูกต้อง! V = ⅓ × 49 × 9 = 147 ลูกบาศก์หน่วย',
+ q2:'ถูกต้อง! พื้นที่ฐาน = 5² = 25 ตารางหน่วย',
+ q3:'ถูกต้อง! พื้นที่ผิวทั้งหมด = พื้นที่ฐาน + พื้นที่ผิวข้าง'
+};
+function check(reveal=false){
+ let score=0;
+ for(let i=1;i<=3;i++){
+  const key='q'+i, selected=document.querySelector('input[name="'+key+'"]:checked'), f=$('f'+i);
+  if(selected && selected.value===answers[key]){score++;f.className='feedback correct';f.textContent=explanations[key]}
+  else if(reveal){f.className='feedback';f.textContent='เฉลย: '+explanations[key]}
+  else if(selected){f.className='feedback incorrect';f.textContent='ยังไม่ถูก ลองทบทวนสูตรแล้วตอบอีกครั้ง'}
+  else {f.className='feedback incorrect';f.textContent='กรุณาเลือกคำตอบ'}
+ }
+ $('score').textContent=reveal?'แสดงเฉลยครบทั้ง 3 ข้อแล้ว':('คะแนนของคุณ '+score+'/3 ข้อ');
+}
+$('quiz').addEventListener('submit',e=>{e.preventDefault();check(false)});
+$('showAnswers').addEventListener('click',()=>check(true));
+update();
+</script>
+</body>
+</html>
